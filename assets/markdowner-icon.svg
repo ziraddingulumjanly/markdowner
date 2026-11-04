@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs>
+<linearGradient id="sheet" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#c7b0ff"/><stop offset=".52" stop-color="#9e70f7"/><stop offset="1" stop-color="#623ae0"/></linearGradient>
+<linearGradient id="orbit" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#d6a9ff"/><stop offset=".5" stop-color="#9d60ff"/><stop offset="1" stop-color="#5736da"/></linearGradient>
+<linearGradient id="fold" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#dfceff"/><stop offset="1" stop-color="#975ef4"/></linearGradient></defs>
+<!-- orbital ellipse passes behind the page -->
+<ellipse cx="256" cy="295" rx="230" ry="79" transform="rotate(-16 256 295)" fill="none" stroke="url(#orbit)" stroke-width="19"/>
+<!-- folded sheet silhouette -->
+<path d="M151 58H299Q317 58 329 71L404 146Q418 160 418 178V398Q418 430 384 430H151Q116 430 116 395V92Q116 58 151 58Z" fill="#21143d" stroke="url(#sheet)" stroke-width="21" stroke-linejoin="round"/>
+<path d="M307 65V142Q307 174 339 174H410Z" fill="url(#fold)"/>
+<path d="M173 154H250M173 199H268" stroke="#966bef" stroke-width="18" stroke-linecap="round"/>
+<path d="M172 350V259L217 315L262 259V350" stroke="#ffffff" stroke-width="21" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<path d="M321 272V350M289 321L321 352L353 321" stroke="#ffffff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<!-- front loop over sheet lower edge -->
+<path d="M34 352C82 411 211 397 313 372C394 352 463 309 479 274" fill="none" stroke="url(#orbit)" stroke-width="19" stroke-linecap="round"/>
+</svg>
