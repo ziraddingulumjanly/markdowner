@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c0b17">
+  <link rel="icon" type="image/png" href="./assets/markdowner-icon.png">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('markdowner-theme')||'dark'}catch(e){document.documentElement.dataset.theme='dark'}</script>
+  <meta name="description" content="Markdowner converts PDF and EPUB documents to Markdown, privately in your browser.">
+  <title>Markdowner — PDF & EPUB to Markdown</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      --bg: #0b0b16;
+      --surface: #161624;
+      --border: #303045;
+      --text: #f7f5ff;
+      --muted: #aaa8bd;
+      --purple: #a37af8;
+    }
+    * { box-sizing: border-box; }
+    body { min-width: 320px; min-height: 100vh; margin: 0; background: var(--bg); color: var(--text); }
+    body::before, body::after {
+      content: ""; position: fixed; pointer-events: none; z-index: -1;
+      border-radius: 50%; filter: blur(1px);
+    }
+    body::before {
+      width: 690px; height: 690px; top: -480px; right: -300px;
+      background: radial-gradient(circle at 35% 50%, #33206e 0%, #201542 50%, transparent 72%);
+      border: 1px solid rgba(143, 83, 255, .16);
+    }
+    body::after {
+      width: 770px; height: 770px; bottom: -690px; left: -510px;
+      background: radial-gradient(circle at 68% 29%, #292061 0%, #1b1640 39%, transparent 73%);
+      border: 1px solid rgba(143, 83, 255, .13);
+    }
+    .site-header { width: min(1360px, calc(100% - 72px)); height: 84px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: inline-flex; align-items: center; gap: 14px; color: #fff; text-decoration: none; font-size: 19px; font-weight: 670; letter-spacing: -.55px; }
+    .brand-icon { width: 29px; height: 29px; color: #ae84ff; }
+    .github { width: 40px; height: 40px; display: grid; place-items: center; color: #f4f2fc; border-radius: 50%; transition: background .2s ease; }
+    .github:hover, .github:focus-visible { background: #262239; }
+    .github svg { width: 23px; height: 23px; fill: currentColor; }
+    main { padding: clamp(34px, 5.5vh, 64px) 24px 72px; }
+    .hero { max-width: 800px; margin: 0 auto; text-align: center; }
+    h1 { margin: 0; font-size: clamp(32px, 4.2vw, 53px); line-height: 1.13; font-weight: 750; letter-spacing: -2.5px; }
+    h1 span { color: #b087ff; }
+    .subtitle { margin: 19px 0 34px; color: #b9b5c8; font-size: clamp(14px, 1.55vw, 17px); line-height: 1.65; }
+    .upload-shell { max-width: 744px; margin: 0 auto; padding: 12px; border: 1px solid #323046; background: linear-gradient(145deg, #1b1b2b 0%, #151522 100%); border-radius: 25px; box-shadow: 0 18px 65px rgba(0,0,0,.23); }
+    .dropzone { min-height: 262px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 16px 27px; border: 1.5px dashed #9469cf; border-radius: 17px; background: radial-gradient(ellipse at 50% 25%, #26233a 0, #1b1a2b 65%, #191827 100%); outline: none; cursor: pointer; transition: border-color .17s, background .17s; }
+    .dropzone:hover, .dropzone:focus-visible, .dropzone.dragging { border-color: #d0aeff; background: #252038; }
+    .dropzone.busy { cursor: progress; }
+    .upload-icon { width: 56px; height: 56px; color: #c2adfa; margin-bottom: 17px; }
+    .drop-title { font-size: clamp(18px, 2vw, 24px); font-weight: 670; letter-spacing: -.5px; }
+    .choose { display: inline-flex; align-items: center; justify-content: center; gap: 11px; min-height: 48px; margin: 20px 0 14px; padding: 0 28px; border: 0; border-radius: 12px; background: linear-gradient(180deg, #b18afe 0%, #9865ef 100%); color: #130e25; font: inherit; font-size: 16px; font-weight: 720; cursor: pointer; box-shadow: 0 4px 18px rgba(119, 65, 220, .15); transition: filter .16s, transform .16s; }
+    .choose:not(:disabled):hover { filter: brightness(1.09); transform: translateY(-1px); }
+    .choose:disabled { opacity: .58; cursor: progress; }
+    .choose svg { width: 20px; height: 20px; }
+    .hint { color: #aaa5bb; font-size: 14px; }
+    .privacy { color: #817e94; text-align: center; margin: 20px 0 0; font-size: 12px; }
+    .process { max-width: 744px; margin: 27px auto 0; border: 1px solid #3b354f; background: linear-gradient(120deg, #1d1b2b, #171625); border-radius: 16px; padding: 20px 22px; text-align: left; box-shadow: 0 14px 45px rgba(0,0,0,.16); }
+    .process[hidden] { display: none; }
+    .process-row { display: flex; gap: 15px; align-items: center; }
+    .process-symbol { flex: 0 0 40px; display: grid; place-items: center; width: 40px; height: 40px; color: #c7b3ff; }
+    .process-symbol svg { width: 34px; height: 34px; }
+    .spinner { display: block; width: 32px; height: 32px; border: 4px solid #343047; border-top-color: #a777ff; border-right-color: #a777ff; border-radius: 50%; animation: spin .85s linear infinite; }
+    .success-icon { color: #47df94; }
+    .error-icon { color: #ff8b92; }
+    .process-copy { min-width: 0; flex: 1; }
+    .process-heading { color: #faf9ff; font-weight: 650; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
+    .process-detail { color: #aaa5bd; font-size: 13px; line-height: 1.5; margin-top: 4px; overflow-wrap: anywhere; }
+    .progress-track { overflow: hidden; height: 7px; width: 100%; margin-top: 12px; background: #343144; border-radius: 20px; }
+    .progress-fill { width: 5%; height: 100%; background: linear-gradient(90deg, #8b63e4, #bd92ff); border-radius: inherit; transition: width .2s ease; }
+    input[type=file] { display: none; }
+    :focus-visible { outline: 2px solid #c9acff; outline-offset: 4px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 700px) {
+      .site-header { width: calc(100% - 38px); height: 72px; }
+      .brand { gap: 10px; font-size: 16px; }
+      .brand-icon { width: 25px; height: 25px; }
+      main { padding-top: 52px; }
+      h1 { letter-spacing: -1.3px; }
+      .subtitle { margin: 18px 0 30px; }
+      .upload-shell { padding: 9px; border-radius: 20px; }
+      .dropzone { min-height: 245px; }
+      .process { padding: 17px 14px; }
+      .process-row { flex-wrap: wrap; gap: 11px; }
+      .process-heading { font-size: 14px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+    /* Theme and single-screen layout */
+    html { color-scheme: dark; }
+    html[data-theme="light"] { color-scheme: light; }
+    body { height: 100vh; height: 100dvh; min-height: 0; display: flex; flex-direction: column; overflow: hidden; isolation: isolate; }
+    .site-header { flex: none; height: clamp(58px, 9vh, 80px); }
+    .brand { color: var(--text); font-size: 20px; }
+    .brand-name > span { color: #a477f7; }
+    .brand-icon { width: 42px; height: 42px; object-fit: contain; }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .theme-toggle { width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--text); cursor: pointer; transition: background .15s; }
+    .theme-toggle:hover, .theme-toggle:focus-visible { background: #262239; }
+    .theme-toggle svg { width: 20px; height: 20px; }
+    .theme-toggle .moon-icon { display: none; }
+    .github { color: var(--text); }
+    main { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 20px 9px; }
+    .hero { width: min(100%, 800px); }
+    h1 { font-size: clamp(30px, 4.15vw, 52px); }
+    .subtitle { margin: clamp(9px, 2vh, 17px) 0 clamp(15px, 3vh, 26px); }
+    .upload-shell { max-width: 744px; }
+    .dropzone { min-height: clamp(175px, 31vh, 255px); padding: 15px 16px; }
+    .upload-icon { width: 49px; height: 49px; margin-bottom: clamp(5px, 1.6vh, 13px); }
+    .choose { margin: 13px 0 10px; }
+    .process { margin-top: clamp(12px, 2vh, 20px); padding: 13px 18px; }
+    .privacy { margin-top: 14px; }
+    [hidden] { display: none !important; }
+    html[data-theme="light"] { --bg:#f8f7fd; --surface:#fff; --border:#e1ddec; --text:#201a30; --muted:#6d677b; }
+    html[data-theme="light"] body { background: #f8f7fc; }
+    html[data-theme="light"] body::before { background: radial-gradient(circle at 40% 50%, #ede3ff 0%, #f6f1fe 57%, transparent 73%); border-color:#e8daff; }
+    html[data-theme="light"] body::after { background: radial-gradient(circle at 68% 30%, #e7dcfc 0%, #f6f1fd 48%, transparent 74%); border-color:#e6d6fa; }
+    html[data-theme="light"] .github:hover,html[data-theme="light"] .theme-toggle:hover { background:#ece8f5; }
+    html[data-theme="light"] h1 { color:#1c1729; }
+    html[data-theme="light"] h1 span { color:#8756dc; }
+    html[data-theme="light"] .subtitle { color:#726c80; }
+    html[data-theme="light"] .upload-shell { background:linear-gradient(145deg,#fff,#f3effb); border-color:#ddd6ed; box-shadow:0 18px 65px rgba(39,18,83,.09); }
+    html[data-theme="light"] .dropzone { background:radial-gradient(ellipse at 50% 24%,#f9f6ff 0%,#f2edf9 100%); border-color:#a77fe3; }
+    html[data-theme="light"] .dropzone:hover, html[data-theme="light"] .dropzone.dragging, html[data-theme="light"] .dropzone:focus-visible { border-color:#7e4ccd; background:#eee7fa; }
+    html[data-theme="light"] .upload-icon { color:#8b5be4; }
+    html[data-theme="light"] .hint,html[data-theme="light"] .privacy { color:#736d81; }
+    html[data-theme="light"] .process { background:#fff; border-color:#e1daed; box-shadow:0 14px 34px rgba(49,30,90,.08); }
+    html[data-theme="light"] .process-heading { color:#252031; }
+    html[data-theme="light"] .process-detail { color:#6f6879; }
+    html[data-theme="light"] .progress-track { background:#e7e0ef; }
+    html[data-theme="light"] .spinner { border-color:#eee8f5; border-top-color:#9865ef; border-right-color:#9865ef; }
+    html[data-theme="light"] .theme-toggle .sun-icon { display:none; }
+    html[data-theme="light"] .theme-toggle .moon-icon { display:block; }
+    @media (max-width:700px) {
+      .site-header { height:64px; }
+      .brand-icon { width:35px; height:35px; }
+      .brand { font-size:18px; }
+      .header-actions { gap: 0; }
+      main { padding: 0 15px 5px; }
+      .dropzone { min-height:clamp(166px,31vh,225px); }
+      .privacy { margin-top:12px; }
+      .process-row { flex-wrap:nowrap; }
+    }
+    @media (max-width:500px) {
+      h1 { font-size:clamp(29px,8vw,37px); }
+      .subtitle { line-height:1.45; font-size:14px; }
+      .upload-shell { padding:8px; }
+      .dropzone { min-height:clamp(155px,28vh,205px); }
+      .drop-title { font-size:18px; }
+      .choose { min-height:42px; padding:0 23px; font-size:14px; }
+      .process { padding:12px; }
+      .process-row { flex-wrap:wrap; gap:8px; }
+      .process-symbol { flex-basis:30px; width:30px; height:30px; }
+      .process-symbol svg,.spinner { width:27px; height:27px; }
+      .process-copy { flex-basis:calc(100% - 42px); }
+    }
+    @media (max-height:700px) {
+      .site-header { height:56px; }
+      .dropzone { min-height:140px; padding:12px; }
+      .upload-icon { width:34px; height:34px; margin-bottom:5px; }
+      .choose { min-height:36px; margin:9px 0 6px; }
+      .subtitle { margin:5px 0 12px; }
+      .privacy { margin-top:8px; }
+      .process { margin-top:9px; padding:10px 12px; }
+      .process-heading { font-size:13px; }
+      .process-detail { font-size:12px; }
+    }
+    @media (max-height:500px) { body { overflow:auto; } main { padding:8px 16px 16px; } }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turndown/7.2.0/turndown.js" defer></script>
+  <script src="./app.js" defer></script>
+  <script defer src="./theme.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Markdowner home">
+      <img class="brand-icon" src="./assets/markdowner-icon.png" alt="" width="37" height="37">
+      <span class="brand-name">Markdown<span>er</span></span>
+    </a>
+    <div class="header-actions"><button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to light mode" title="Toggle light/dark mode"><svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg><svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.7 13.2a9 9 0 0 1-9.9-9.9 9.3 9.3 0 1 0 9.9 9.9Z"/></svg></button><a class="github" href="https://github.com/ziraddingulumjanly/markdowner" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub" title="GitHub">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .75a11.25 11.25 0 0 0-3.558 21.924c.563.105.769-.245.769-.543 0-.268-.01-.975-.015-1.913-3.13.68-3.791-1.51-3.791-1.51-.512-1.302-1.25-1.648-1.25-1.648-1.022-.698.078-.684.078-.684 1.131.08 1.726 1.16 1.726 1.16 1.005 1.723 2.64 1.224 3.282.936.102-.728.393-1.224.715-1.506-2.498-.284-5.124-1.25-5.124-5.56 0-1.228.438-2.233 1.159-3.02-.117-.285-.502-1.43.11-2.981 0 0 .944-.302 3.094 1.154a10.8 10.8 0 0 1 5.632 0c2.15-1.456 3.092-1.154 3.092-1.154.614 1.552.228 2.696.112 2.98.721.788 1.157 1.793 1.157 3.021 0 4.322-2.63 5.274-5.134 5.55.404.35.764 1.042.764 2.1 0 1.516-.014 2.74-.014 3.113 0 .3.205.654.774.543A11.25 11.25 0 0 0 12 .75Z"/></svg>
+    </a></div>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <h1 id="title">Convert files to <span>Markdown</span></h1>
+      <p class="subtitle">Upload a document and download its Markdown (.md) version.</p>
+      <div class="upload-shell">
+        <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Choose or drop a PDF or EPUB file">
+          <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 2.5H6A2.5 2.5 0 0 0 3.5 5v14A2.5 2.5 0 0 0 6 21.5h12a2.5 2.5 0 0 0 2.5-2.5V9.5Z"/><path d="M13.5 2.5v7h7"/><path d="M12 19v-7"/><path d="m8.7 15.3 3.3-3.3 3.3 3.3"/></svg>
+          <div class="drop-title">Drag &amp; drop your file here</div>
+          <button id="choose" class="choose" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 6.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2Z"/></svg>
+            Choose File
+          </button>
+          <div class="hint">Supports PDF and EPUB</div>
+        </div>
+      </div>
+      <input id="file" type="file" accept=".pdf,.epub,application/pdf,application/epub+zip" aria-label="Upload a PDF or EPUB">
+      <section id="process" class="process" aria-live="polite" aria-atomic="false" aria-label="Conversion status" hidden>
+        <div class="process-row">
+          <div id="process-symbol" class="process-symbol" aria-hidden="true"></div>
+          <div class="process-copy">
+            <div id="process-heading" class="process-heading"></div>
+            <div id="process-detail" class="process-detail"></div>
+            <div id="progress-track" class="progress-track" role="progressbar" aria-label="Conversion progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden><div id="progress-fill" class="progress-fill"></div></div>
+          </div>
+        </div>
+      </section>
+      <p class="privacy">Private by design · Your files stay in your browser</p>
+    </section>
+  </main>
+</body>
+</html>
